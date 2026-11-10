@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Pswitcher
+Comment=Manage PHP, Node.js, Composer, Go and Flutter versions
+Exec=pswitcher
+Icon=pswitcher
+Categories=Development;
+Terminal=false

@@ -1,0 +1,18 @@
+[package]
+name = "pswitcher"
+version = "0.1.0"
+edition = "2024"
+description = "Gestor local de versiones de PHP, Node.js, Composer, Go y Flutter"
+
+[dependencies]
+directories = "6"
+flate2 = "1"
+iced = { version = "0.14", default-features = false, features = ["tokio", "tiny-skia", "crisp", "web-colors", "thread-pool", "linux-theme-detection", "x11", "wayland"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+rfd = "0.16"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+tar = "0.4"
+tempfile = "3"
+tokio = { version = "1", features = ["process", "rt-multi-thread"] }
