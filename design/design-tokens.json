@@ -1,0 +1,344 @@
+{
+  "formatVersion": "1.0",
+  "identity": {
+    "project": "pswitcher",
+    "version": "0.2",
+    "status": "proposal",
+    "language": "es (supuesto reversible)",
+    "source": "visual-identity.md",
+    "approval": "Autorización explícita del usuario para implementar la revisión 0.2.",
+    "implementationAuthorized": true
+  },
+  "tokens": {
+    "font.family.ui": {
+      "type": "fontFamily",
+      "value": "Noto Sans",
+      "description": "Sistema Linux; alternativa sans-serif del sistema"
+    },
+    "font.family.code": {
+      "type": "fontFamily",
+      "value": "Fira Code",
+      "description": "Sistema Linux; alternativa monospace del sistema"
+    },
+    "text.label": {
+      "type": "typography",
+      "value": {
+        "family": "{font.family.ui}",
+        "weight": 600,
+        "size": "12px",
+        "lineHeight": "16px"
+      }
+    },
+    "text.body": {
+      "type": "typography",
+      "value": {
+        "family": "{font.family.ui}",
+        "weight": 400,
+        "size": "14px",
+        "lineHeight": "20px"
+      }
+    },
+    "text.bodyStrong": {
+      "type": "typography",
+      "value": {
+        "family": "{font.family.ui}",
+        "weight": 600,
+        "size": "14px",
+        "lineHeight": "20px"
+      }
+    },
+    "text.subtitle": {
+      "type": "typography",
+      "value": {
+        "family": "{font.family.ui}",
+        "weight": 600,
+        "size": "20px",
+        "lineHeight": "28px"
+      }
+    },
+    "text.title": {
+      "type": "typography",
+      "value": {
+        "family": "{font.family.ui}",
+        "weight": 700,
+        "size": "28px",
+        "lineHeight": "36px"
+      }
+    },
+    "text.technical": {
+      "type": "typography",
+      "value": {
+        "family": "{font.family.code}",
+        "weight": 400,
+        "size": "13px",
+        "lineHeight": "20px"
+      }
+    },
+    "space.1": {
+      "type": "dimension",
+      "value": "4px"
+    },
+    "space.2": {
+      "type": "dimension",
+      "value": "8px"
+    },
+    "space.3": {
+      "type": "dimension",
+      "value": "12px"
+    },
+    "space.4": {
+      "type": "dimension",
+      "value": "16px"
+    },
+    "space.6": {
+      "type": "dimension",
+      "value": "24px"
+    },
+    "space.8": {
+      "type": "dimension",
+      "value": "32px"
+    },
+    "space.12": {
+      "type": "dimension",
+      "value": "48px"
+    },
+    "radius.control": {
+      "type": "dimension",
+      "value": "6px"
+    },
+    "radius.panel": {
+      "type": "dimension",
+      "value": "10px"
+    },
+    "radius.container": {
+      "type": "dimension",
+      "value": "14px"
+    },
+    "border.default": {
+      "type": "dimension",
+      "value": "1px"
+    },
+    "border.focus": {
+      "type": "dimension",
+      "value": "2px"
+    },
+    "control.height.minimum": {
+      "type": "dimension",
+      "value": "40px"
+    },
+    "motion.duration.fast": {
+      "type": "duration",
+      "value": "140ms"
+    },
+    "motion.duration.standard": {
+      "type": "duration",
+      "value": "200ms"
+    },
+    "motion.curve.standard": {
+      "type": "cubicBezier",
+      "value": [
+        0.2,
+        0,
+        0,
+        1
+      ]
+    },
+    "motion.reduced": {
+      "type": "motionPolicy",
+      "value": "immediate"
+    },
+    "palette.neutral.canvas": {
+      "type": "color",
+      "value": "#F7F5F0",
+      "description": "Lienzo marfil"
+    },
+    "palette.neutral.surface": {
+      "type": "color",
+      "value": "#FFFFFF",
+      "description": "Superficie principal"
+    },
+    "palette.neutral.subtle": {
+      "type": "color",
+      "value": "#F0EADD",
+      "description": "Superficie secundaria cálida"
+    },
+    "palette.neutral.border": {
+      "type": "color",
+      "value": "#D8D0C3",
+      "description": "Borde estructural cálido"
+    },
+    "palette.neutral.text": {
+      "type": "color",
+      "value": "#28231F",
+      "description": "Texto principal"
+    },
+    "palette.neutral.muted": {
+      "type": "color",
+      "value": "#5C564D",
+      "description": "Texto secundario"
+    },
+    "palette.neutral.inverse": {
+      "type": "color",
+      "value": "#FFFFFF",
+      "description": "Texto sobre acción"
+    },
+    "palette.redViolet.500": {
+      "type": "color",
+      "value": "#C71585",
+      "description": "Red Violet base, acción primaria"
+    },
+    "palette.redViolet.600": {
+      "type": "color",
+      "value": "#A1146E",
+      "description": "Hover"
+    },
+    "palette.redViolet.700": {
+      "type": "color",
+      "value": "#850E59",
+      "description": "Pulsado"
+    },
+    "palette.redViolet.800": {
+      "type": "color",
+      "value": "#76104F",
+      "description": "Foco visible"
+    },
+    "palette.redViolet.tint": {
+      "type": "color",
+      "value": "#F9EAF2",
+      "description": "Fondo tenue"
+    },
+    "palette.isabella.base": {
+      "type": "color",
+      "value": "#C3A55C",
+      "description": "Isabella Color de Sanzo Wada; decorativo"
+    },
+    "palette.isabella.deep": {
+      "type": "color",
+      "value": "#6D5725",
+      "description": "Texto oro oscuro"
+    },
+    "palette.isabella.pale": {
+      "type": "color",
+      "value": "#F5EFDE",
+      "description": "Superficie oro pálido"
+    },
+    "palette.state.success": {
+      "type": "color",
+      "value": "#336344",
+      "description": "Éxito"
+    },
+    "palette.state.successBackground": {
+      "type": "color",
+      "value": "#E8F1E9",
+      "description": "Fondo de éxito"
+    },
+    "palette.state.warning": {
+      "type": "color",
+      "value": "#6F551A",
+      "description": "Aviso"
+    },
+    "palette.state.warningBackground": {
+      "type": "color",
+      "value": "#F5EEDB",
+      "description": "Fondo de aviso"
+    },
+    "palette.state.error": {
+      "type": "color",
+      "value": "#9D2E28",
+      "description": "Error"
+    },
+    "palette.state.errorBackground": {
+      "type": "color",
+      "value": "#F8E8E6",
+      "description": "Fondo de error"
+    },
+    "color.background.canvas": {
+      "type": "color",
+      "value": "{palette.neutral.canvas}"
+    },
+    "color.background.surface": {
+      "type": "color",
+      "value": "{palette.neutral.surface}"
+    },
+    "color.background.subtle": {
+      "type": "color",
+      "value": "{palette.neutral.subtle}"
+    },
+    "color.background.accent": {
+      "type": "color",
+      "value": "{palette.isabella.pale}"
+    },
+    "color.text.primary": {
+      "type": "color",
+      "value": "{palette.neutral.text}"
+    },
+    "color.text.secondary": {
+      "type": "color",
+      "value": "{palette.neutral.muted}"
+    },
+    "color.text.inverse": {
+      "type": "color",
+      "value": "{palette.neutral.inverse}"
+    },
+    "color.border.default": {
+      "type": "color",
+      "value": "{palette.neutral.border}"
+    },
+    "color.border.focus": {
+      "type": "color",
+      "value": "{palette.redViolet.800}"
+    },
+    "color.action.primary": {
+      "type": "color",
+      "value": "{palette.redViolet.500}"
+    },
+    "color.action.primaryHover": {
+      "type": "color",
+      "value": "{palette.redViolet.600}"
+    },
+    "color.action.primaryPressed": {
+      "type": "color",
+      "value": "{palette.redViolet.700}"
+    },
+    "color.accent.isabella": {
+      "type": "color",
+      "value": "{palette.isabella.base}"
+    },
+    "color.accent.isabellaText": {
+      "type": "color",
+      "value": "{palette.isabella.deep}"
+    },
+    "color.accent.isabellaBackground": {
+      "type": "color",
+      "value": "{palette.isabella.pale}"
+    },
+    "color.state.success": {
+      "type": "color",
+      "value": "{palette.state.success}"
+    },
+    "color.state.successBackground": {
+      "type": "color",
+      "value": "{palette.state.successBackground}"
+    },
+    "color.state.warning": {
+      "type": "color",
+      "value": "{palette.state.warning}"
+    },
+    "color.state.warningBackground": {
+      "type": "color",
+      "value": "{palette.state.warningBackground}"
+    },
+    "color.state.error": {
+      "type": "color",
+      "value": "{palette.state.error}"
+    },
+    "color.state.errorBackground": {
+      "type": "color",
+      "value": "{palette.state.errorBackground}"
+    },
+    "color.state.progressBackground": {
+      "type": "color",
+      "value": "{palette.redViolet.tint}"
+    }
+  }
+}
