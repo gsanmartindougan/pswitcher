@@ -59,6 +59,59 @@ pub struct PhpExtensions {
     pub intl: bool,
     pub zip: bool,
     pub pdo_mysql: bool,
+    pub xml: bool,
+    pub pdo_sqlite: bool,
+    pub pgsql: bool,
+    pub bcmath: bool,
+    pub sockets: bool,
+    pub soap: bool,
+    pub fileinfo: bool,
+    pub sodium: bool,
+    pub ldap: bool,
+    pub iconv: bool,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum PhpExtension {
+    Gd,
+    Mbstring,
+    Curl,
+    Intl,
+    Zip,
+    PdoMysql,
+    Xml,
+    PdoSqlite,
+    Pgsql,
+    Bcmath,
+    Sockets,
+    Soap,
+    Fileinfo,
+    Sodium,
+    Ldap,
+    Iconv,
+}
+
+impl PhpExtensions {
+    pub fn set(&mut self, extension: PhpExtension, enabled: bool) {
+        match extension {
+            PhpExtension::Gd => self.gd = enabled,
+            PhpExtension::Mbstring => self.mbstring = enabled,
+            PhpExtension::Curl => self.curl = enabled,
+            PhpExtension::Intl => self.intl = enabled,
+            PhpExtension::Zip => self.zip = enabled,
+            PhpExtension::PdoMysql => self.pdo_mysql = enabled,
+            PhpExtension::Xml => self.xml = enabled,
+            PhpExtension::PdoSqlite => self.pdo_sqlite = enabled,
+            PhpExtension::Pgsql => self.pgsql = enabled,
+            PhpExtension::Bcmath => self.bcmath = enabled,
+            PhpExtension::Sockets => self.sockets = enabled,
+            PhpExtension::Soap => self.soap = enabled,
+            PhpExtension::Fileinfo => self.fileinfo = enabled,
+            PhpExtension::Sodium => self.sodium = enabled,
+            PhpExtension::Ldap => self.ldap = enabled,
+            PhpExtension::Iconv => self.iconv = enabled,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -595,8 +648,10 @@ async fn install_php(
         .arg("--disable-all")
         .arg("--enable-cli")
         .arg("--enable-phar")
+        .arg("--with-openssl")
         .stdout(Stdio::null())
         .stderr(Stdio::piped());
+    let has_pdo = extensions.pdo_mysql || extensions.pdo_sqlite || extensions.pgsql;
     for option in [
         extensions.gd.then_some("--enable-gd"),
         extensions.gd.then_some("--with-jpeg"),
@@ -605,8 +660,24 @@ async fn install_php(
         extensions.curl.then_some("--with-curl"),
         extensions.intl.then_some("--enable-intl"),
         extensions.zip.then_some("--with-zip"),
-        extensions.pdo_mysql.then_some("--enable-pdo"),
+        has_pdo.then_some("--enable-pdo"),
         extensions.pdo_mysql.then_some("--with-pdo-mysql=mysqlnd"),
+        (extensions.xml || extensions.soap).then_some("--with-libxml"),
+        extensions.xml.then_some("--enable-xml"),
+        extensions.xml.then_some("--enable-dom"),
+        extensions.xml.then_some("--enable-simplexml"),
+        extensions.xml.then_some("--enable-xmlreader"),
+        extensions.xml.then_some("--enable-xmlwriter"),
+        extensions.pdo_sqlite.then_some("--with-pdo-sqlite"),
+        extensions.pgsql.then_some("--with-pgsql"),
+        extensions.pgsql.then_some("--with-pdo-pgsql"),
+        extensions.bcmath.then_some("--enable-bcmath"),
+        extensions.sockets.then_some("--enable-sockets"),
+        extensions.soap.then_some("--enable-soap"),
+        extensions.fileinfo.then_some("--enable-fileinfo"),
+        extensions.sodium.then_some("--with-sodium"),
+        extensions.ldap.then_some("--with-ldap"),
+        extensions.iconv.then_some("--with-iconv"),
     ]
     .into_iter()
     .flatten()
@@ -668,6 +739,25 @@ pub fn installed_php_extensions(root: &Path, version: &str) -> PhpExtensions {
         intl: modules.contains("intl"),
         zip: modules.contains("zip"),
         pdo_mysql: modules.contains("pdo_mysql"),
+        xml: [
+            "libxml",
+            "xml",
+            "dom",
+            "simplexml",
+            "xmlreader",
+            "xmlwriter",
+        ]
+        .iter()
+        .all(|module| modules.contains(*module)),
+        pdo_sqlite: modules.contains("pdo_sqlite"),
+        pgsql: modules.contains("pgsql") && modules.contains("pdo_pgsql"),
+        bcmath: modules.contains("bcmath"),
+        sockets: modules.contains("sockets"),
+        soap: modules.contains("soap"),
+        fileinfo: modules.contains("fileinfo"),
+        sodium: modules.contains("sodium"),
+        ldap: modules.contains("ldap"),
+        iconv: modules.contains("iconv"),
     }
 }
 
@@ -691,16 +781,37 @@ fn php_modules(php: &Path) -> std::collections::HashSet<String> {
 fn php_extensions_present(php: &Path, requested: PhpExtensions) -> bool {
     let modules = php_modules(php);
     modules.contains("phar")
+        && modules.contains("openssl")
         && (!requested.gd || modules.contains("gd"))
         && (!requested.mbstring || modules.contains("mbstring"))
         && (!requested.curl || modules.contains("curl"))
         && (!requested.intl || modules.contains("intl"))
         && (!requested.zip || modules.contains("zip"))
         && (!requested.pdo_mysql || modules.contains("pdo_mysql"))
+        && (!requested.xml
+            || [
+                "libxml",
+                "xml",
+                "dom",
+                "simplexml",
+                "xmlreader",
+                "xmlwriter",
+            ]
+            .iter()
+            .all(|module| modules.contains(*module)))
+        && (!requested.pdo_sqlite || modules.contains("pdo_sqlite"))
+        && (!requested.pgsql || modules.contains("pgsql") && modules.contains("pdo_pgsql"))
+        && (!requested.bcmath || modules.contains("bcmath"))
+        && (!requested.sockets || modules.contains("sockets"))
+        && (!requested.soap || modules.contains("libxml") && modules.contains("soap"))
+        && (!requested.fileinfo || modules.contains("fileinfo"))
+        && (!requested.sodium || modules.contains("sodium"))
+        && (!requested.ldap || modules.contains("ldap"))
+        && (!requested.iconv || modules.contains("iconv"))
 }
 
 fn php_build_dependencies_available(extensions: PhpExtensions) -> bool {
-    let mut packages = Vec::new();
+    let mut packages = vec!["openssl"];
     if extensions.gd {
         packages.extend(["libpng", "libjpeg", "freetype2"]);
     }
@@ -715,6 +826,21 @@ fn php_build_dependencies_available(extensions: PhpExtensions) -> bool {
     }
     if extensions.zip {
         packages.push("libzip");
+    }
+    if extensions.xml || extensions.soap {
+        packages.push("libxml-2.0");
+    }
+    if extensions.pdo_sqlite {
+        packages.push("sqlite3");
+    }
+    if extensions.pgsql {
+        packages.push("libpq");
+    }
+    if extensions.sodium {
+        packages.push("libsodium");
+    }
+    if extensions.ldap {
+        packages.push("ldap");
     }
     packages.is_empty()
         || std::process::Command::new("pkg-config")

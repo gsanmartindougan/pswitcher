@@ -17,7 +17,7 @@ chmod +x Pswitcher-*-x86_64.AppImage
 
 - Choose the install directory in **Settings**. The default is `~/Tools/pswitcher`.
 - Install and select multiple versions of each tool from **Versions**. Catalogs load when you open an install screen; Node, Go, and Flutter support searching by version number.
-- Choose PHP extensions during installation or reinstallation. Pswitcher builds PHP from its official source and verifies the requested extensions. Phar is always enabled so Composer can run.
+- Choose PHP extensions during installation or reinstallation: GD, mbstring, cURL, Intl, ZIP, PDO MySQL, XML, PDO SQLite, PostgreSQL, BCMath, Sockets, SOAP, Fileinfo, Sodium, LDAP, and iconv. Phar and OpenSSL are always enabled; OpenSSL provides Composer's secure HTTPS downloads. Pswitcher builds PHP from its official source and verifies the selected extensions.
 - Enable Bash integration in **Settings** to let Pswitcher manage its marked block in `~/.bashrc`. Open a new terminal after changing the selection.
 - Without Bash integration, the selection applies inside Pswitcher and does not change the `PATH` in terminal sessions.
 - **Settings** can check system build tools. It shows dependency guidance for `apt` on Debian/Ubuntu derivatives and `dnf` on Fedora/RHEL derivatives.
@@ -27,7 +27,7 @@ Versions are kept separately by tool and version under the chosen directory. App
 ## Requirements and scope
 
 - Linux on x86_64 or aarch64. The AppImage in this release is x86_64.
-- Building PHP requires a C compiler, GNU Make, `tar`, `xz`, and development libraries required by the selected extensions. Pswitcher does not install system packages.
+- Building PHP requires a C compiler, GNU Make, `pkg-config`, OpenSSL development files, `tar`, `xz`, and development libraries required by the selected extensions. Pswitcher does not install system packages.
 - PHP extension availability depends on the development libraries installed on your distribution.
 - Node.js, Composer, Go, and Flutter are downloaded from their official catalogs and sources; Pswitcher validates downloads when a checksum is provided by the catalog.
 - This version manages global selections from the app; it does not apply per-project versions.

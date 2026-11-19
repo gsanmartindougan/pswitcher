@@ -36,12 +36,7 @@ enum Message {
     CancelDeleteVersion,
     VersionRemovalFinished(Tool, String, Result<(), String>),
     InstallVersionChanged(String),
-    PhpGdChanged(bool),
-    PhpMbstringChanged(bool),
-    PhpCurlChanged(bool),
-    PhpIntlChanged(bool),
-    PhpZipChanged(bool),
-    PhpPdoMysqlChanged(bool),
+    PhpExtensionChanged(installer::PhpExtension, bool),
     ConfirmInstall,
     CancelInstall,
     InstallProgress(installer::InstallProgress),
@@ -69,12 +64,7 @@ struct App {
     install_tool: Option<Tool>,
     install_version: String,
     reinstall_php: bool,
-    php_gd: bool,
-    php_mbstring: bool,
-    php_curl: bool,
-    php_intl: bool,
-    php_zip: bool,
-    php_pdo_mysql: bool,
+    php_extensions: installer::PhpExtensions,
     installing: Option<(Tool, String)>,
     install_progress: Option<installer::InstallProgress>,
     pending_delete: Option<(Tool, String)>,
@@ -103,12 +93,7 @@ impl App {
             install_tool: None,
             install_version: String::new(),
             reinstall_php: false,
-            php_gd: false,
-            php_mbstring: false,
-            php_curl: false,
-            php_intl: false,
-            php_zip: false,
-            php_pdo_mysql: false,
+            php_extensions: installer::PhpExtensions::default(),
             installing: None,
             install_progress: None,
             pending_delete: None,
@@ -162,12 +147,7 @@ impl App {
                 self.reinstall_php = true;
                 let extensions =
                     installer::installed_php_extensions(&self.config.install_root, &version);
-                self.php_gd = extensions.gd;
-                self.php_mbstring = extensions.mbstring;
-                self.php_curl = extensions.curl;
-                self.php_intl = extensions.intl;
-                self.php_zip = extensions.zip;
-                self.php_pdo_mysql = extensions.pdo_mysql;
+                self.php_extensions = extensions;
                 self.install_progress = None;
                 self.releases[tool_index(Tool::Php)] = Vec::new();
                 self.catalog_loading = None;
@@ -207,12 +187,9 @@ impl App {
                     }
                 }
             }
-            Message::PhpGdChanged(enabled) => self.php_gd = enabled,
-            Message::PhpMbstringChanged(enabled) => self.php_mbstring = enabled,
-            Message::PhpCurlChanged(enabled) => self.php_curl = enabled,
-            Message::PhpIntlChanged(enabled) => self.php_intl = enabled,
-            Message::PhpZipChanged(enabled) => self.php_zip = enabled,
-            Message::PhpPdoMysqlChanged(enabled) => self.php_pdo_mysql = enabled,
+            Message::PhpExtensionChanged(extension, enabled) => {
+                self.php_extensions.set(extension, enabled)
+            }
             Message::ConfirmInstall => return self.install_task(),
             Message::CancelInstall => {
                 self.clear_install_catalog();
@@ -225,12 +202,7 @@ impl App {
                 self.clear_install_catalog();
                 self.install_tool = None;
                 self.reinstall_php = false;
-                self.php_gd = false;
-                self.php_mbstring = false;
-                self.php_curl = false;
-                self.php_intl = false;
-                self.php_zip = false;
-                self.php_pdo_mysql = false;
+                self.php_extensions = installer::PhpExtensions::default();
                 self.page = Page::Versions;
                 match result {
                     Ok(_) => {
@@ -535,37 +507,109 @@ impl App {
                     "Phar · siempre habilitada para ejecutar Composer",
                     "Phar · always enabled to run Composer",
                 )),
-                iced::widget::checkbox(self.php_gd)
+                iced::widget::checkbox(self.php_extensions.gd)
                     .label(self.tr("GD · imágenes PNG/JPEG", "GD · PNG/JPEG images"))
-                    .on_toggle(Message::PhpGdChanged),
-                iced::widget::checkbox(self.php_mbstring)
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Gd, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.mbstring)
                     .label("mbstring · Unicode")
-                    .on_toggle(Message::PhpMbstringChanged),
-                iced::widget::checkbox(self.php_curl)
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Mbstring, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.curl)
                     .label("cURL · HTTP")
-                    .on_toggle(Message::PhpCurlChanged),
-                iced::widget::checkbox(self.php_intl)
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Curl, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.intl)
                     .label(self.tr("Intl · internacionalización", "Intl · internationalization"))
-                    .on_toggle(Message::PhpIntlChanged),
-                iced::widget::checkbox(self.php_zip)
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Intl, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.zip)
                     .label(self.tr("ZIP · archivos comprimidos", "ZIP · compressed archives"))
-                    .on_toggle(Message::PhpZipChanged),
-                iced::widget::checkbox(self.php_pdo_mysql)
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Zip, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.pdo_mysql)
                     .label("PDO MySQL · mysqlnd")
-                    .on_toggle(Message::PhpPdoMysqlChanged),
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::PdoMysql, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.xml)
+                    .label(self.tr(
+                        "XML · DOM, SimpleXML, XMLReader/Writer",
+                        "XML · DOM, SimpleXML, XMLReader/Writer",
+                    ))
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Xml, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.pdo_sqlite)
+                    .label("PDO SQLite")
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::PdoSqlite, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.pgsql)
+                    .label(self.tr(
+                        "PostgreSQL · pgsql y PDO_PGSQL",
+                        "PostgreSQL · pgsql and PDO_PGSQL",
+                    ))
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Pgsql, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.bcmath)
+                    .label("BCMath · aritmética de precisión")
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Bcmath, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.sockets)
+                    .label("Sockets")
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Sockets, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.soap)
+                    .label("SOAP")
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Soap, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.fileinfo)
+                    .label("Fileinfo · detección de tipo de archivo")
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Fileinfo, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.sodium)
+                    .label("Sodium · criptografía")
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Sodium, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.ldap)
+                    .label("LDAP · directorios")
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Ldap, enabled)
+                    }),
+                iced::widget::checkbox(self.php_extensions.iconv)
+                    .label("iconv · conversión de caracteres")
+                    .on_toggle(|enabled| {
+                        Message::PhpExtensionChanged(installer::PhpExtension::Iconv, enabled)
+                    }),
+                text(self.tr(
+                    "OpenSSL · siempre habilitada para HTTPS seguro y Composer",
+                    "OpenSSL · always enabled for secure HTTPS and Composer",
+                )),
                 text(self.tr(
                     "Instala manualmente las dependencias de las extensiones seleccionadas. No se instalarán paquetes del sistema automáticamente.",
                     "Install the selected extensions' dependencies manually. System packages are never installed automatically.",
                 ))
                 .size(11),
                 text(self.tr(
-                    "Debian: sudo apt install pkg-config libpng-dev libjpeg-dev libfreetype-dev libonig-dev libcurl4-openssl-dev libicu-dev libzip-dev",
-                    "Debian: sudo apt install pkg-config libpng-dev libjpeg-dev libfreetype-dev libonig-dev libcurl4-openssl-dev libicu-dev libzip-dev",
+                    "Debian: sudo apt install pkg-config libssl-dev libxml2-dev libsqlite3-dev libpq-dev libsodium-dev libldap2-dev libpng-dev libjpeg-dev libfreetype-dev libonig-dev libcurl4-openssl-dev libicu-dev libzip-dev",
+                    "Debian: sudo apt install pkg-config libssl-dev libxml2-dev libsqlite3-dev libpq-dev libsodium-dev libldap2-dev libpng-dev libjpeg-dev libfreetype-dev libonig-dev libcurl4-openssl-dev libicu-dev libzip-dev",
                 ))
                 .size(10),
                 text(self.tr(
-                    "Fedora: sudo dnf install pkgconf-pkg-config libpng-devel libjpeg-turbo-devel freetype-devel oniguruma-devel libcurl-devel libicu-devel libzip-devel",
-                    "Fedora: sudo dnf install pkgconf-pkg-config libpng-devel libjpeg-turbo-devel freetype-devel oniguruma-devel libcurl-devel libicu-devel libzip-devel",
+                    "Fedora: sudo dnf install pkgconf-pkg-config openssl-devel libxml2-devel sqlite-devel libpq-devel libsodium-devel openldap-devel libpng-devel libjpeg-turbo-devel freetype-devel oniguruma-devel libcurl-devel libicu-devel libzip-devel",
+                    "Fedora: sudo dnf install pkgconf-pkg-config openssl-devel libxml2-devel sqlite-devel libpq-devel libsodium-devel openldap-devel libpng-devel libjpeg-turbo-devel freetype-devel oniguruma-devel libcurl-devel libicu-devel libzip-devel",
                 ))
                 .size(10),
             ]
@@ -750,30 +794,40 @@ impl App {
             };
             let package_hint = match check.package_family {
                 system_check::PackageFamily::Debian => self.tr(
-                    "En Debian/Ubuntu y derivados: sudo apt install build-essential tar xz-utils",
-                    "On Debian/Ubuntu and derivatives: sudo apt install build-essential tar xz-utils",
+                    "En Debian/Ubuntu y derivados: sudo apt install build-essential pkg-config libssl-dev tar xz-utils",
+                    "On Debian/Ubuntu and derivatives: sudo apt install build-essential pkg-config libssl-dev tar xz-utils",
                 ),
                 system_check::PackageFamily::Fedora => self.tr(
-                    "En Fedora/RHEL y derivados: sudo dnf install gcc make tar xz",
-                    "On Fedora/RHEL and derivatives: sudo dnf install gcc make tar xz",
+                    "En Fedora/RHEL y derivados: sudo dnf install gcc make pkgconf-pkg-config openssl-devel tar xz",
+                    "On Fedora/RHEL and derivatives: sudo dnf install gcc make pkgconf-pkg-config openssl-devel tar xz",
                 ),
                 system_check::PackageFamily::Other => self.tr(
-                    "Instala un compilador C, GNU Make, tar y xz con el gestor de paquetes de tu distro.",
-                    "Install a C compiler, GNU Make, tar and xz with your distribution's package manager.",
+                    "Instala un compilador C, GNU Make, pkg-config, OpenSSL de desarrollo, tar y xz con el gestor de paquetes de tu distro.",
+                    "Install a C compiler, GNU Make, pkg-config, OpenSSL development files, tar and xz with your distribution's package manager.",
                 ),
             };
             let tar = if check.tar { ok } else { missing };
             let xz = if check.xz { ok } else { missing };
+            let pkg_config = if check.pkg_config { ok } else { missing };
+            let openssl_devel = if check.openssl_devel { ok } else { missing };
             column![
                 text(format!("Linux: {}", if check.linux { ok } else { missing })).size(12),
                 text(format!("{}: {distro}", self.tr("Familia detectada", "Detected family"))).size(12),
                 text(format!("{}: {architecture}", self.tr("Arquitectura", "Architecture"))).size(12),
                 text(format!("{}: {compiler}", self.tr("Compilador C + enlazador", "C compiler + linker"))).size(12),
                 text(format!("GNU Make: {make}")).size(12),
+                text(format!("pkg-config: {pkg_config}")).size(12),
+                text(format!("OpenSSL devel: {openssl_devel}")).size(12),
                 text(format!("tar: {tar}")).size(12),
                 text(format!("xz: {xz}")).size(12),
                 text(format!("Bash: {bash} · {}", self.tr("opcional", "optional"))).size(12),
-                if check.compiler.is_none() || !check.gnu_make || !check.tar || !check.xz {
+                if check.compiler.is_none()
+                    || !check.gnu_make
+                    || !check.pkg_config
+                    || !check.openssl_devel
+                    || !check.tar
+                    || !check.xz
+                {
                     text(package_hint).size(11)
                 } else {
                     text(self.tr(
@@ -946,12 +1000,7 @@ impl App {
         self.install_tool = Some(tool);
         self.install_version.clear();
         self.reinstall_php = false;
-        self.php_gd = false;
-        self.php_mbstring = false;
-        self.php_curl = false;
-        self.php_intl = false;
-        self.php_zip = false;
-        self.php_pdo_mysql = false;
+        self.php_extensions = installer::PhpExtensions::default();
         self.install_progress = None;
         self.releases[tool_index(tool)] = Vec::new();
         self.catalog_loading = None;
@@ -1021,14 +1070,7 @@ impl App {
             label: "Preparando instalación",
         });
         let root = self.config.install_root.clone();
-        let php_extensions = installer::PhpExtensions {
-            gd: self.php_gd,
-            mbstring: self.php_mbstring,
-            curl: self.php_curl,
-            intl: self.php_intl,
-            zip: self.php_zip,
-            pdo_mysql: self.php_pdo_mysql,
-        };
+        let php_extensions = self.php_extensions;
         let replace_php = self.reinstall_php;
         Task::run(
             iced::stream::channel::<Message>(

@@ -14,6 +14,8 @@ pub struct SystemCheck {
     pub supported_architecture: bool,
     pub compiler: Option<String>,
     pub gnu_make: bool,
+    pub pkg_config: bool,
+    pub openssl_devel: bool,
     pub tar: bool,
     pub xz: bool,
     pub bash: bool,
@@ -28,6 +30,8 @@ pub fn check() -> SystemCheck {
         architecture,
         compiler: c_compiler(),
         gnu_make: has_gnu_make(),
+        pkg_config: has_command("pkg-config"),
+        openssl_devel: has_pkg_config("openssl"),
         tar: has_command("tar"),
         xz: has_command("xz"),
         bash: Command::new("bash")
@@ -43,6 +47,13 @@ fn has_command(name: &str) -> bool {
         .arg("--version")
         .output()
         .is_ok_and(|result| result.status.success())
+}
+
+fn has_pkg_config(package: &str) -> bool {
+    Command::new("pkg-config")
+        .args(["--exists", package])
+        .status()
+        .is_ok_and(|status| status.success())
 }
 
 fn c_compiler() -> Option<String> {

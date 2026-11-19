@@ -17,7 +17,7 @@ chmod +x Pswitcher-*-x86_64.AppImage
 
 - Elige la carpeta de instalación en **Ajustes**. La ruta inicial es `~/Tools/pswitcher`.
 - Instala y selecciona varias versiones de cada herramienta desde **Versiones**. Los catálogos se consultan al abrir la instalación; Node, Go y Flutter permiten buscar por número de versión.
-- Para PHP, elige extensiones al instalar o reinstalar. Pswitcher compila PHP desde sus fuentes oficiales y comprueba las extensiones solicitadas. Phar se habilita siempre para que Composer pueda ejecutarse.
+- Para PHP, elige extensiones al instalar o reinstalar: GD, mbstring, cURL, Intl, ZIP, PDO MySQL, XML, PDO SQLite, PostgreSQL, BCMath, Sockets, SOAP, Fileinfo, Sodium, LDAP e iconv. Phar y OpenSSL se habilitan siempre; OpenSSL permite las descargas HTTPS seguras de Composer. Pswitcher compila PHP desde sus fuentes oficiales y comprueba las extensiones seleccionadas.
 - Activa la integración con Bash desde **Ajustes** para que Pswitcher administre su bloque marcado en `~/.bashrc`. Abre una terminal nueva tras cambiar la selección.
 - Sin integración con Bash, la selección se aplica dentro de Pswitcher, pero no modifica el `PATH` de las terminales.
 - **Ajustes** también comprueba las herramientas de compilación del sistema. En Debian/Ubuntu y derivados se indican dependencias para `apt`; en Fedora/RHEL y derivados, para `dnf`.
@@ -27,7 +27,7 @@ Las versiones quedan separadas por herramienta y número, dentro de la carpeta e
 ## Requisitos y alcance
 
 - Linux en x86_64 o aarch64. El AppImage publicado en esta release es x86_64.
-- Para compilar PHP se necesitan un compilador C, GNU Make, `tar`, `xz` y las bibliotecas de desarrollo requeridas por las extensiones elegidas. Pswitcher no instala paquetes del sistema por ti.
+- Para compilar PHP se necesitan un compilador C, GNU Make, `pkg-config`, OpenSSL de desarrollo, `tar`, `xz` y las bibliotecas de desarrollo requeridas por las extensiones elegidas. Pswitcher no instala paquetes del sistema por ti.
 - La disponibilidad de extensiones PHP depende de sus bibliotecas de desarrollo presentes en la distro.
 - Node.js, Composer, Go y Flutter se descargan desde sus catálogos y fuentes oficiales; Pswitcher valida las descargas cuando el catálogo proporciona una suma.
 - Esta versión gestiona selecciones globales desde la aplicación; no aplica versiones por proyecto.
