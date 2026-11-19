@@ -531,6 +531,10 @@ impl App {
         let extensions: Element<'_, Message> = if tool == Tool::Php {
             column![
                 text(self.tr("Extensiones PHP", "PHP extensions")).size(16),
+                text(self.tr(
+                    "Phar · siempre habilitada para ejecutar Composer",
+                    "Phar · always enabled to run Composer",
+                )),
                 iced::widget::checkbox(self.php_gd)
                     .label(self.tr("GD · imágenes PNG/JPEG", "GD · PNG/JPEG images"))
                     .on_toggle(Message::PhpGdChanged),

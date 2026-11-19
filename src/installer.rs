@@ -594,6 +594,7 @@ async fn install_php(
         .arg(format!("--prefix={}", install_prefix.display()))
         .arg("--disable-all")
         .arg("--enable-cli")
+        .arg("--enable-phar")
         .stdout(Stdio::null())
         .stderr(Stdio::piped());
     for option in [
@@ -689,7 +690,8 @@ fn php_modules(php: &Path) -> std::collections::HashSet<String> {
 
 fn php_extensions_present(php: &Path, requested: PhpExtensions) -> bool {
     let modules = php_modules(php);
-    (!requested.gd || modules.contains("gd"))
+    modules.contains("phar")
+        && (!requested.gd || modules.contains("gd"))
         && (!requested.mbstring || modules.contains("mbstring"))
         && (!requested.curl || modules.contains("curl"))
         && (!requested.intl || modules.contains("intl"))

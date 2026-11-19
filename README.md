@@ -17,7 +17,7 @@ chmod +x Pswitcher-*-x86_64.AppImage
 
 - Elige la carpeta de instalación en **Ajustes**. La ruta inicial es `~/Tools/pswitcher`.
 - Instala y selecciona varias versiones de cada herramienta desde **Versiones**. Los catálogos se consultan al abrir la instalación; Node, Go y Flutter permiten buscar por número de versión.
-- Para PHP, elige extensiones al instalar o reinstalar. Pswitcher compila PHP desde sus fuentes oficiales y comprueba las extensiones solicitadas.
+- Para PHP, elige extensiones al instalar o reinstalar. Pswitcher compila PHP desde sus fuentes oficiales y comprueba las extensiones solicitadas. Phar se habilita siempre para que Composer pueda ejecutarse.
 - Activa la integración con Bash desde **Ajustes** para que Pswitcher administre su bloque marcado en `~/.bashrc`. Abre una terminal nueva tras cambiar la selección.
 - Sin integración con Bash, la selección se aplica dentro de Pswitcher, pero no modifica el `PATH` de las terminales.
 - **Ajustes** también comprueba las herramientas de compilación del sistema. En Debian/Ubuntu y derivados se indican dependencias para `apt`; en Fedora/RHEL y derivados, para `dnf`.

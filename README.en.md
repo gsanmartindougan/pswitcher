@@ -17,7 +17,7 @@ chmod +x Pswitcher-*-x86_64.AppImage
 
 - Choose the install directory in **Settings**. The default is `~/Tools/pswitcher`.
 - Install and select multiple versions of each tool from **Versions**. Catalogs load when you open an install screen; Node, Go, and Flutter support searching by version number.
-- Choose PHP extensions during installation or reinstallation. Pswitcher builds PHP from its official source and verifies the requested extensions.
+- Choose PHP extensions during installation or reinstallation. Pswitcher builds PHP from its official source and verifies the requested extensions. Phar is always enabled so Composer can run.
 - Enable Bash integration in **Settings** to let Pswitcher manage its marked block in `~/.bashrc`. Open a new terminal after changing the selection.
 - Without Bash integration, the selection applies inside Pswitcher and does not change the `PATH` in terminal sessions.
 - **Settings** can check system build tools. It shows dependency guidance for `apt` on Debian/Ubuntu derivatives and `dnf` on Fedora/RHEL derivatives.
